@@ -1,6 +1,8 @@
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Arrays;
+
 
 public class correlation {
     public static void main(String[] args) {
@@ -11,19 +13,7 @@ public class correlation {
         String cipherString = myObj.nextLine();  // Read user input
         System.out.println("Cipher string: " + cipherString);  // Output user input
 
-        String alphabetString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String newCipherString = "";
-        HashSet<Character> cipherSet = new HashSet<>();
-        for(int i = 0; i < cipherString.length(); i++){
-            if(!cipherSet.contains(cipherString.charAt(i))) {
-                cipherSet.add(cipherString.charAt(i));
-                newCipherString += cipherString.charAt(i);
-            }
-        }
-        //System.out.println(cipherSet);
-        System.out.println("Single character cipher string: " + newCipherString);
-        System.out.println("");
-        //hashmap to store the character frequencies.
+        //hashmap to store the 1-gram (plaintext) character frequencies.
         HashMap<Character, Float> charFrequencyMap = new HashMap<>();
         charFrequencyMap.put('A', 0.080f);
         charFrequencyMap.put('B', 0.015f);
@@ -54,90 +44,76 @@ public class correlation {
 
         //hashmap to store the cipher character frequencies.
         HashMap<Character, Float> cipherTextFrequencyMap = new HashMap<>();
-        cipherTextFrequencyMap.put('A', 0.000f);
-        cipherTextFrequencyMap.put('B', 0.179f);
-        cipherTextFrequencyMap.put('C', 0.036f);
-        cipherTextFrequencyMap.put('D', 0.000f);
-        cipherTextFrequencyMap.put('E', 0.107f);
-        cipherTextFrequencyMap.put('F', 0.036f);
-        cipherTextFrequencyMap.put('G', 0.000f);
-        cipherTextFrequencyMap.put('H', 0.000f);
-        cipherTextFrequencyMap.put('I', 0.000f);
-        cipherTextFrequencyMap.put('J', 0.036f);
-        cipherTextFrequencyMap.put('K', 0.143f);
-        cipherTextFrequencyMap.put('L', 0.071f);
-        cipherTextFrequencyMap.put('M', 0.000f);
-        cipherTextFrequencyMap.put('N', 0.000f);
-        cipherTextFrequencyMap.put('O', 0.036f);
-        cipherTextFrequencyMap.put('P', 0.071f);
-        cipherTextFrequencyMap.put('Q', 0.071f);
-        cipherTextFrequencyMap.put('R', 0.071f);
-        cipherTextFrequencyMap.put('S', 0.036f);
-        cipherTextFrequencyMap.put('T', 0.036f);
-        cipherTextFrequencyMap.put('U', 0.000f);
-        cipherTextFrequencyMap.put('V', 0.000f);
-        cipherTextFrequencyMap.put('W', 0.000f);
-        cipherTextFrequencyMap.put('X', 0.036f);
-        cipherTextFrequencyMap.put('Y', 0.000f);
-        cipherTextFrequencyMap.put('Z', 0.036f);
+        for (char i = 'A'; i <= 'Z'; i++)
+            cipherTextFrequencyMap.put(i, 0.000f);
+        //System.out.println(Arrays.asList(cipherTextFrequencyMap));
 
         //hashmap to store character numbers
         HashMap<Character, Integer> alphabet = new HashMap<>();
-        alphabet.put('A', 0);
-        alphabet.put('B', 1);
-        alphabet.put('C', 2);
-        alphabet.put('D', 3);
-        alphabet.put('E', 4);
-        alphabet.put('F', 5);
-        alphabet.put('G', 6);
-        alphabet.put('H', 7);
-        alphabet.put('I', 8);
-        alphabet.put('J', 9);
-        alphabet.put('K', 10);
-        alphabet.put('L', 11);
-        alphabet.put('M', 12);
-        alphabet.put('N', 13);
-        alphabet.put('O', 14);
-        alphabet.put('P', 15);
-        alphabet.put('Q', 16);
-        alphabet.put('R', 17);
-        alphabet.put('S', 18);
-        alphabet.put('T', 19);
-        alphabet.put('U', 20);
-        alphabet.put('V', 21);
-        alphabet.put('W', 22);
-        alphabet.put('X', 23);
-        alphabet.put('Y', 24);
-        alphabet.put('Z', 25);
+        int k = 0;
+        for (char i = 'A'; i <= 'Z'; i++) {
+            alphabet.put(i, k);
+            k++;
+        }
+        //System.out.println(Arrays.asList(alphabet));
 
         //hashmap to correlate integer to its character
         HashMap<Integer, Character> backwards = new HashMap<>();
-        backwards.put(0, 'A');
-        backwards.put(1, 'B');
-        backwards.put(2, 'C');
-        backwards.put(3, 'D');
-        backwards.put(4, 'E');
-        backwards.put(5, 'F');
-        backwards.put(6, 'G');
-        backwards.put(7, 'H');
-        backwards.put(8, 'I');
-        backwards.put(9, 'J');
-        backwards.put(10, 'K');
-        backwards.put(11, 'L');
-        backwards.put(12, 'M');
-        backwards.put(13, 'N');
-        backwards.put(14, 'O');
-        backwards.put(15, 'P');
-        backwards.put(16, 'Q');
-        backwards.put(17, 'R');
-        backwards.put(18, 'S');
-        backwards.put(19, 'T');
-        backwards.put(20, 'U');
-        backwards.put(21, 'V');
-        backwards.put(22, 'W');
-        backwards.put(23, 'X');
-        backwards.put(24, 'Y');
-        backwards.put(25, 'Z');
+        int l = 0;
+        for (char i = 'A'; i <= 'Z'; i++) {
+            backwards.put(l, i);
+            l++;
+        }
+        //System.out.println(Arrays.asList(backwards));
+
+        //sort the cipher string
+        char tempArray[] = cipherString.toCharArray(); // convert input string to char array
+        Arrays.sort(tempArray); // sort tempArray
+        String sortedCipherString = new String(tempArray);
+        System.out.println("Sorted single character cipher string: " + sortedCipherString);
+        System.out.println("");
+
+        //count number of times character appears in cipher string
+        int MAX_CHAR = 256;
+        float count[] = new float[MAX_CHAR]; // Create an array of size 256 i.e. ASCII_SIZE
+        int cipherLength = sortedCipherString.length();
+        for (int i = 0; i < cipherLength; i++)  // Initialize count array index
+            count[sortedCipherString.charAt(i)]++;
+        char ch[] = new char[sortedCipherString.length()];// Create an array of given String size
+        for (int i = 0; i < cipherLength; i++) {
+            ch[i] = sortedCipherString.charAt(i);
+            int find = 0;
+            for (int j = 0; j <= i; j++) {
+                if (sortedCipherString.charAt(i) == ch[j]) // If any matches found
+                    find++;
+            }
+            if (find == 1) {
+                //update cipher hashmap with correct cipher text frequencies for given string
+                cipherTextFrequencyMap.put(sortedCipherString.charAt(i), (count[sortedCipherString.charAt(i)] / cipherLength));
+                //prints letter followed by number of occurrence
+                //System.out.println("Number of Occurrence of " + sortedCipherString.charAt(i) + " is:" + count[sortedCipherString.charAt(i)]);
+            }
+        }
+        //System.out.println("New HashMap: " + cipherTextFrequencyMap.toString());
+
+        //creates a single character cipher string
+        String alphabetString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String newCipherString = "";
+        HashSet<Character> cipherSet = new HashSet<>();
+        for(int i = 0; i < cipherString.length(); i++){
+            if(!cipherSet.contains(cipherString.charAt(i))) {
+                cipherSet.add(cipherString.charAt(i));
+                newCipherString += cipherString.charAt(i);
+            }
+        }
+        System.out.println("Single character cipher string: " + newCipherString);
+
+        //sort the new cipher string
+        char newTempArray[] = newCipherString.toCharArray(); // convert input string to char array
+        Arrays.sort(newTempArray); // sort tempArray
+        String newSortedCipher = new String(newTempArray); // return new sorted string
+        System.out.println("Sorted single character cipher string: " + newSortedCipher);
+        System.out.println("");
 
         //mult array stores values for multiplication of cipher frequency and p
         float [] mult = new float[alphabetString.length()]; //length 26. 0-25
@@ -152,9 +128,9 @@ public class correlation {
         //traverse through alphabet using for loop
         for (int i = 0; i < alphabetString.length(); i++) {
             System.out.println("iteration " + i);
-            for (int j = 0; j < newCipherString.length(); j++) {
+            for (int j = 0; j < newSortedCipher.length(); j++) {
                 //lets figure out P value. if value < 0 add 26.
-                p = alphabet.get((newCipherString.charAt(j))) - i;
+                p = alphabet.get((newSortedCipher.charAt(j))) - i;
                 if (p < 0) {
                     p += 26;
                     //System.out.println(i);
@@ -167,7 +143,7 @@ public class correlation {
                 System.out.println(pChar);
                 multP = charFrequencyMap.get(pChar);
                 System.out.println("Char frequency: " + multP);
-                multFreq = cipherTextFrequencyMap.get((newCipherString.charAt(j)));
+                multFreq = cipherTextFrequencyMap.get((newSortedCipher.charAt(j)));
                 System.out.println("Cipher frequency: " + multFreq);
                 multTotal = (multP *multFreq);
                 System.out.println("char*cipher: " + multTotal);
@@ -179,6 +155,8 @@ public class correlation {
             System.out.println("  ");
             calc = 0f;
         }
+        //System.out.println(Arrays.toString(mult)); //prints mult array
+
         System.out.println("FINAL RESULTS");
         for(int i = 0; i < mult.length;i++){
             System.out.println(i + " " + backwards.get(i) + " " + mult[i]);
@@ -186,3 +164,8 @@ public class correlation {
     }
 }
 
+//for ciphertext -> plaintext (DECRYPTION)
+//find key then go backwards in alphabet
+
+//for plaintext -> cipher text
+//find key then go forwards in alphabet.
